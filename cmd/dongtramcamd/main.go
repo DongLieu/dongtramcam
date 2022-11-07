@@ -4,22 +4,37 @@ import (
 	"os"
 
 	"dongtramcam/app"
+
+	"dongtramcam/cmd/dongtramcamd/cmd"
+
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
-	"github.com/ignite/cli/ignite/pkg/xstrings"
 )
 
 func main() {
+	cmdOptions := GetCmdOptions()
 	rootCmd, _ := cosmoscmd.NewRootCmd(
 		app.Name,
 		app.AccountAddressPrefix,
 		app.DefaultNodeHome,
-		xstrings.NoDash(app.Name),
+		app.Name,
 		app.ModuleBasics,
 		app.New,
-		// this line is used by starport scaffolding # root/arguments
+		cmdOptions...,
 	)
-	if err := svrcmd.Execute(rootCmd, "", app.DefaultNodeHome); err != nil {
+
+	if err := svrcmd.Execute(rootCmd, "donghettramcam", app.DefaultNodeHome); err != nil {
 		os.Exit(1)
 	}
+}
+
+func GetCmdOptions() []cosmoscmd.Option {
+	var options []cosmoscmd.Option
+
+	options = append(options,
+		cosmoscmd.AddSubCmd(cmd.TestnetCmd(app.ModuleBasics, banktypes.GenesisBalancesIterator{})),
+	)
+
+	return options
 }
