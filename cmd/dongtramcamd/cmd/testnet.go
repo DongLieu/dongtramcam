@@ -10,14 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/DongLieu/dongtramcam/app"
-
-	"github.com/spf13/cobra"
-	tmconfig "github.com/tendermint/tendermint/config"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	"dongtramcam/app"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -35,10 +28,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v2/modules/core/04-channel/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 
-	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
+	// "github.com/ignite/cli/ignite/pkg/cosmoscmd"
+	"github.com/spf13/cobra"
+	tmconfig "github.com/tendermint/tendermint/config"
+	tmos "github.com/tendermint/tendermint/libs/os"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
+	"github.com/tendermint/tendermint/types"
+	tmtime "github.com/tendermint/tendermint/types/time"
+)
+
+const (
+	DefaultDenom = "udongtramcam"
 )
 
 var (
@@ -50,7 +53,7 @@ var (
 )
 
 type CustomAppConfig struct {
-	serverconfig.Config
+	srvconfig.Config
 
 	// BypassMinFeeMsgTypes defines custom message types the operator may set that
 	// will bypass minimum fee checks during CheckTx.
@@ -97,7 +100,7 @@ Example:
 	cmd.Flags().String(flagNodeDirPrefix, "node", "Prefix the directory name for each node with (node results in node0, node1, ...)")
 	cmd.Flags().String(flagStartingIPAddress, "0.0.0.0", "Starting IP address (192.168.0.1 results in persistent peers list ID0@192.168.0.1:46656, ID1@192.168.0.2:46656, ...)")
 	cmd.Flags().String(flags.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
-	cmd.Flags().String(server.FlagMinGasPrices, fmt.Sprintf("0.000006%s", app.DefaultDenom), "Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.01photino,0.001stake)")
+	cmd.Flags().String(server.FlagMinGasPrices, fmt.Sprintf("0.000006%s", DefaultDenom), "Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.01photino,0.001stake)")
 	cmd.Flags().String(flags.FlagKeyringBackend, flags.DefaultKeyringBackend, "Select keyring's backend (os|file|test)")
 	cmd.Flags().String(flags.FlagKeyAlgorithm, string(hd.Secp256k1Type), "Key signing algorithm to generate keys for")
 
@@ -185,8 +188,10 @@ func InitTestnet(
 
 		memo := fmt.Sprintf("%s@%s:%d", nodeIDs[i], ip, listen_p2p_port)
 		genFiles = append(genFiles, nodeConfig.GenesisFile())
-
-		kb, err := keyring.New(sdk.KeyringServiceName(), keyringBackend, nodeDir, inBuf)
+		// encodingConfig := cosmoscmd.EncodingConfig
+		// appCodec := encodingConfig.Marshaler
+		Codess := clientCtx.Codec
+		kb, err := keyring.New(sdk.KeyringServiceName(), keyringBackend, nodeDir, inBuf, Codess)
 		if err != nil {
 			return err
 		}
@@ -217,7 +222,7 @@ func InitTestnet(
 
 		accStakingTokens := sdk.TokensFromConsensusPower(500, sdk.DefaultPowerReduction)
 		coins := sdk.Coins{
-			sdk.NewCoin(app.DefaultDenom, accStakingTokens),
+			sdk.NewCoin(DefaultDenom, accStakingTokens),
 		}
 
 		genBalances = append(genBalances, banktypes.Balance{Address: addr.String(), Coins: coins.Sort()})
@@ -227,7 +232,7 @@ func InitTestnet(
 		createValMsg, err := stakingtypes.NewMsgCreateValidator(
 			sdk.ValAddress(addr),
 			valPubKeys[i],
-			sdk.NewCoin(app.DefaultDenom, valTokens),
+			sdk.NewCoin(DefaultDenom, valTokens),
 			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
 			stakingtypes.NewCommissionRates(sdk.OneDec(), sdk.OneDec(), sdk.OneDec()),
 			sdk.OneInt(),
