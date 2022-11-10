@@ -1,3 +1,4 @@
+##########====4node====######
 FROM golang:1.18-alpine3.16 AS go-builder
 
 RUN set -eux
@@ -12,21 +13,61 @@ RUN echo "Installing dongtramcamd binary"
 RUN make build
 
 #-------------------------------------------
-FROM alpine:3.16
+FROM golang:1.18-alpine3.16
 
 RUN apk add --no-cache bash py3-pip jq curl
 RUN pip install toml-cli
 
+WORKDIR /
+
 COPY --from=go-builder /code/bin/dongtramcamd /usr/bin/dongtramcamd
+COPY --from=go-builder /code/bin/dongtramcamd /
 
-COPY answer/* /opt/
-RUN chmod +x /opt/*.sh
-
-WORKDIR /opt
 
 # rest server
-EXPOSE 1350
+EXPOSE 1317
 # tendermint rpc
-EXPOSE 1711
+EXPOSE 26657
+# p2p address
+EXPOSE 26656
+# gRPC address
+EXPOSE 9090
 
-CMD ["dongtramcamd", "version"]
+# wrong ENTRYPOINT can lead to executable not running
+ENTRYPOINT ["/bin/bash", "-c"]
+
+
+#########====1node====######
+
+# FROM golang:1.18-alpine3.16 AS go-builder
+
+# RUN set -eux
+
+# RUN apk add --no-cache ca-certificates git build-base linux-headers
+
+# WORKDIR /code
+# COPY . /code/
+
+# # Install dongtramcamd binary
+# RUN echo "Installing dongtramcamd binary"
+# RUN make build
+
+# #-------------------------------------------
+# FROM alpine:3.16
+
+# RUN apk add --no-cache bash py3-pip jq curl
+# RUN pip install toml-cli
+
+# COPY --from=go-builder /code/bin/dongtramcamd /usr/bin/dongtramcamd
+
+# COPY answer/* /opt/
+# RUN chmod +x /opt/*.sh
+
+# WORKDIR /opt
+
+# # rest server
+# EXPOSE 1350
+# # tendermint rpc
+# EXPOSE 1711
+
+# CMD ["dongtramcamd", "version"]
