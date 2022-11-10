@@ -51,3 +51,11 @@ curl https://get.ignite.com/username/dongtramcam@latest! | sudo bash
 - [Cosmos SDK docs](https://docs.cosmos.network)
 - [Developer Chat](https://discord.gg/ignite)
 # dongtramcam
+co nhanh master:- chay 1 node, 3 node, 4 node: file shell
+                - 1 node treen docker:
+                                    + docker-compose build
+                                    + docker-compose up
+                                    + docker exec -it 8d107824d9a9 bash : vaof chain tx
+nhanh 4 node: chay treen docker:
+                -  make localnet-build
+                -  make localnet-start

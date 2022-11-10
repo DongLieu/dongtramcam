@@ -1,5 +1,15 @@
+# version: "3"
+# services:
+#   node:
+#     build:
+#       context: .
+#     command: bash bon-node.sh
+#     ports:
+#       - 1350:1350 # rest
+#       - 1711:1711 # rpc
+
 version: '3'
-# cua dong 4node
+# cua dong
 services:
   node0:
     container_name: dongtramcamnode0
@@ -33,7 +43,7 @@ services:
     container_name: dongtramcamnode2
     image: "dongtramcam-node"
     ports:
-      - "26661-26662:26656-26657"
+      - "26662-26663:26656-26657"
       - "1319:1317"
     volumes:
       - ./build/node2:/dongtramcam:Z
@@ -47,7 +57,7 @@ services:
     container_name: dongtramcamnode3
     image: "dongtramcam-node"
     ports:
-      - "26663-26664:26656-26657"
+      - "26665-26666:26656-26657"
       - "1320:1317"
     volumes:
       - ./build/node3:/dongtramcam:Z
@@ -65,14 +75,3 @@ networks:
       config:
         -
           subnet: 192.167.10.0/16
-
-# =====1node======
-# version: "3"
-# services:
-#   node:
-#     build:
-#       context: .
-#     command: bash deploy-testnet.sh
-#     ports:
-#       - 1350:1350 # rest
-#       - 1711:1711 # rpc

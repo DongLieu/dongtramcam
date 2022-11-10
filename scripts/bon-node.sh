@@ -59,10 +59,10 @@ cp $HOME/.dongtramcam/node0/config/genesis.json $HOME/.dongtramcam/node2/config/
 cp $HOME/.dongtramcam/node0/config/genesis.json $HOME/.dongtramcam/node3/config/genesis.json
 
 echo "start all three validators"
-screen -S validator1 -d -m dongtramcamd start --home=$HOME/.dongtramcam/node0
-screen -S validator2 -d -m dongtramcamd start --home=$HOME/.dongtramcam/node1
-screen -S validator3 -d -m dongtramcamd start --home=$HOME/.dongtramcam/node2
-screen -S validator4 -d -m dongtramcamd start --home=$HOME/.dongtramcam/node3
+dongtramcamd start --home=$HOME/.dongtramcam/node0 
+dongtramcamd start --home=$HOME/.dongtramcam/node1
+dongtramcamd start --home=$HOME/.dongtramcam/node2
+dongtramcamd start --home=$HOME/.dongtramcam/node3 #screen -S validator4 -d -m 
 
 echo $(dongtramcamd keys show node0 -a --keyring-backend=test --home=$HOME/.dongtramcam/node0)
 echo $(dongtramcamd keys show node1 -a --keyring-backend=test --home=$HOME/.dongtramcam/node1)

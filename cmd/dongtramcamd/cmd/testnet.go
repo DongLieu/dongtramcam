@@ -171,7 +171,7 @@ func InitTestnet(
 		}
 
 		nodeConfig.Moniker = nodeDirName
-		listen_p2p_port := 40000 + i
+		listen_p2p_port := 26656
 		nodeConfig.P2P.ListenAddress = fmt.Sprintf("tcp://0.0.0.0:%d", listen_p2p_port)
 
 		ip, err := getIP(0, startingIPAddress)
@@ -354,10 +354,10 @@ func collectGenFiles(
 
 		nodeConfig.SetRoot(nodeDir)
 
-		listen_rpc_port := 50000 + i
+		listen_rpc_port := 26657
 		nodeConfig.RPC.ListenAddress = fmt.Sprintf("tcp://0.0.0.0:%d", listen_rpc_port)
 
-		listen_p2p_port := 40000 + i
+		listen_p2p_port := 26656
 		nodeConfig.P2P.ListenAddress = fmt.Sprintf("tcp://0.0.0.0:%d", listen_p2p_port)
 
 		nodeID, valPubKey := nodeIDs[i], valPubKeys[i]

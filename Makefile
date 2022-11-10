@@ -117,8 +117,9 @@ localnet-build:
 	docker build -f Dockerfile -t dongtramcam-node .
 
 # Start a 4-node testnet locally
-localnet-start:   
-    docker run --rm -v /build:/dongtramcam:Z dongtramcam-node -c "dongtramcamd testnet --v 4 -o dongtramcam --chain-id dongtramcam-1 --keyring-backend=test --starting-ip-address 192.167.10.2"
+localnet-start: localnet-clean
+	docker run --rm -v $(CURDIR)/build:/dongtramcam:Z dongtramcam-node -c "dongtramcamd testnet --v 4 -o dongtramcam --chain-id dongtramcam-1 --keyring-backend=test --starting-ip-address 192.167.10.2"
+	bash scripts/change-config.sh
 	docker-compose up -d
 	bash scripts/add-keys.sh
 
