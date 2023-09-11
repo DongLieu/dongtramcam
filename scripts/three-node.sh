@@ -1,6 +1,6 @@
 #!/bin/bash
 rm -rf $HOME/.dongtramcam/
-killall screen
+killall dongtramcamd || true
 
 # start a testnet
 dongtramcamd testnet --keyring-backend=test
